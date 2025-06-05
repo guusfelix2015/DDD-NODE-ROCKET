@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Answer } from '../../enterprise/entities/answer'
 import { AnswersRepository } from '../repositories/answers-repository'
@@ -8,6 +9,10 @@ interface AnswerQuestionUseCaseRequest {
   content: string
 }
 
+interface AnswerQuestionUseResponse {
+  answer: Answer
+}
+
 export class AnswerQuestionUseCase {
   constructor(private answerRepository: AnswersRepository) { }
 
@@ -15,7 +20,7 @@ export class AnswerQuestionUseCase {
     instructorId,
     questionId,
     content,
-  }: AnswerQuestionUseCaseRequest) {
+  }: AnswerQuestionUseCaseRequest): Promise<AnswerQuestionUseResponse> {
     const answer = Answer.create({
       content,
       questionId: new UniqueEntityID(questionId),
@@ -24,6 +29,6 @@ export class AnswerQuestionUseCase {
 
     await this.answerRepository.create(answer)
 
-    return answer
+    return { answer }
   }
 }
