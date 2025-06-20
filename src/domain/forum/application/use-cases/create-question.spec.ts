@@ -1,13 +1,13 @@
 /* eslint-disable prettier/prettier */
 import { CreateQuestionUseCase } from './create-question'
-import { InMemoryQuestionRespository } from 'test/repositories/in-memory-questions-repository copy'
+import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository copy'
 
-let inMemoryQuestionRespository: InMemoryQuestionRespository
+let inMemoryQuestionRespository: InMemoryQuestionsRepository
 let sut: CreateQuestionUseCase
 
 describe("Create Question", () => {
   beforeEach(() => {
-    inMemoryQuestionRespository = new InMemoryQuestionRespository()
+    inMemoryQuestionRespository = new InMemoryQuestionsRepository()
     sut = new CreateQuestionUseCase(inMemoryQuestionRespository)
   })
 

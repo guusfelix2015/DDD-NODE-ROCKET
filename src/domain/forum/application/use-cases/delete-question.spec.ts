@@ -1,32 +1,50 @@
-/* eslint-disable prettier/prettier */
-import { QuestionsRepository } from '../repositories/questions-repository'
+import { makeQuestion } from 'test/factories/make-question'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { DeleteQuestionUseCase } from './delete-question'
+import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository copy'
 
-interface DeleteQuestionUseCaseRequest {
-  authorId: string
-  questionId: string
-}
+let inMemoryQuestionsRepository: InMemoryQuestionsRepository
+let sut: DeleteQuestionUseCase
 
-interface DeleteQuestionUseCaseResponse { }
+describe('Delete Question', () => {
+  beforeEach(() => {
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
+    sut = new DeleteQuestionUseCase(inMemoryQuestionsRepository)
+  })
 
-export class DeleteQuestionUseCase {
-  constructor(private questionsRepository: QuestionsRepository) { }
+  it('should be able to delete a question', async () => {
+    const newQuestion = makeQuestion(
+      {
+        authorId: new UniqueEntityID('author-1'),
+      },
+      new UniqueEntityID('question-1'),
+    )
 
-  async execute({
-    questionId,
-    authorId,
-  }: DeleteQuestionUseCaseRequest): Promise<DeleteQuestionUseCaseResponse> {
-    const question = await this.questionsRepository.findById(questionId)
+    await inMemoryQuestionsRepository.create(newQuestion)
 
-    if (!question) {
-      throw new Error('Question not found.')
-    }
+    await sut.execute({
+      questionId: 'question-1',
+      authorId: 'author-1',
+    })
 
-    if (authorId !== question.authorId.toString()) {
-      throw new Error('Not allowed.')
-    }
+    expect(inMemoryQuestionsRepository.items).toHaveLength(0)
+  })
 
-    await this.questionsRepository.delete(question)
+  it('should not be able to delete a question from another user', async () => {
+    const newQuestion = makeQuestion(
+      {
+        authorId: new UniqueEntityID('author-1'),
+      },
+      new UniqueEntityID('question-1'),
+    )
 
-    return {}
-  }
-}
+    await inMemoryQuestionsRepository.create(newQuestion)
+
+    expect(() => {
+      return sut.execute({
+        questionId: 'question-1',
+        authorId: 'author-2',
+      })
+    }).rejects.toBeInstanceOf(Error)
+  })
+})

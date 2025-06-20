@@ -1,15 +1,15 @@
 /* eslint-disable prettier/prettier */
-import { InMemoryQuestionRespository } from 'test/repositories/in-memory-questions-repository copy'
+import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository copy'
 import { GetQuestionBySlugUseCase } from './get-question-by-slug'
 import { makeQuestion } from 'test/factories/make-question'
 import { Slug } from '../../enterprise/entities/value-objects/slug'
 
-let inMemoryQuestionRespository: InMemoryQuestionRespository
+let inMemoryQuestionRespository: InMemoryQuestionsRepository
 let sut: GetQuestionBySlugUseCase
 
 describe("Get Question By Slug", () => {
   beforeEach(() => {
-    inMemoryQuestionRespository = new InMemoryQuestionRespository()
+    inMemoryQuestionRespository = new InMemoryQuestionsRepository()
     sut = new GetQuestionBySlugUseCase(inMemoryQuestionRespository)
   })
 
@@ -18,8 +18,6 @@ describe("Get Question By Slug", () => {
     const newQuestion = makeQuestion({
       slug: Slug.create("exemple-slug")
     })
-
-    console.log(newQuestion)
 
     inMemoryQuestionRespository.create(newQuestion)
 
